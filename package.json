@@ -1,0 +1,19 @@
+{
+  "name": "natour",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adnan725/node-1-natours.git"
+  },
+  "author": "Adnan Ali",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/adnan725/node-1-natours/issues"
+  },
+  "homepage": "https://github.com/adnan725/node-1-natours#readme"
+}
