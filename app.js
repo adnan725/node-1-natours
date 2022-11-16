@@ -65,6 +65,25 @@ app.get('/api/v1/tours/:tourId', (req, res) => {
   // );
 });
 
+// PATCH method used to update some part of the object in available backend data
+
+app.patch('/api/v1/tours/:id', (req, res) => {
+  const id = req.params.id * 1;
+  const findTour = tours.find((tour) => tour.id === id);
+
+  // after finding specific tour, we updated the 'duration' property of the tour
+  const updateTour = Object.assign(findTour, (findTour.duration = req.body));
+
+  //Added the updated tour to the list of all tours
+  const updatedAllTour = Object.assign(tours, (tours[id] = updateTour));
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour: updatedAllTour,
+    },
+  });
+});
+
 const port = 3000;
 
 // Listen to the server
