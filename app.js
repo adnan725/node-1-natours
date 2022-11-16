@@ -9,6 +9,8 @@ const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
+/////////////////////////////// GET Method //////////////////////////////////
+
 // 'get' is a http method which specifies something to happen against a certain ULR
 
 app.get('/api/v1/tours', (req, res) => {
@@ -20,6 +22,8 @@ app.get('/api/v1/tours', (req, res) => {
     },
   });
 });
+
+////////////////////////////// POST Method ////////////////////////////////////
 
 // 'post' is a http method whihc is used to write something in data in database
 app.post('/api/v1/tours', (req, res) => {
@@ -65,6 +69,8 @@ app.get('/api/v1/tours/:tourId', (req, res) => {
   // );
 });
 
+///////////////////////////////// PATCH Method //////////////////////////////////
+
 // PATCH method used to update some part of the object in available backend data
 
 app.patch('/api/v1/tours/:id', (req, res) => {
@@ -80,6 +86,21 @@ app.patch('/api/v1/tours/:id', (req, res) => {
     status: 'success',
     data: {
       tour: updatedAllTour,
+    },
+  });
+});
+
+/////////////////////////////// DELETE Method ///////////////////////////////
+
+app.delete('/api/v1/tours/:id', (req, res) => {
+  const id = req.params.id * 1;
+  const toursAfterDeletion = tours.filter((tour) => tour.id !== id);
+  console.log(toursAfterDeletion);
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      data: toursAfterDeletion,
     },
   });
 });
