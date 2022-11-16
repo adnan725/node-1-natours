@@ -3,6 +3,8 @@ const app = express();
 
 const fs = require('fs');
 
+app.use(express.json());
+
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
@@ -17,6 +19,50 @@ app.get('/api/v1/tours', (req, res) => {
       tours,
     },
   });
+});
+
+// 'post' is a http method whihc is used to write something in data in database
+app.post('/api/v1/tours', (req, res) => {
+  const newId = tours[tours.length - 1].id + 1;
+  const newTour = Object.assign({ id: newId }, req.body);
+  tours.push(newTour);
+
+  fs.writeFile(
+    `${__dirname}/dev-data/data/tours-simple.json`,
+    JSON.stringify(tours),
+    (err) => {
+      res.status(201).json({
+        status: 'success',
+        data: {
+          tours: newTour,
+        },
+      });
+    }
+  );
+});
+
+app.get('/api/v1/tours/:tourId', (req, res) => {
+  const id = req.params.tourId;
+  const singleTour = tours.find((tour) => tour.id === +id);
+  singleTour
+    ? res.status(200).json({
+        status: 'success',
+        data: {
+          tour: singleTour,
+        },
+      })
+    : res.status(404).json({
+        status: 'Invalid',
+        message: 'Invalid Id',
+      });
+
+  // fs.writeFile(
+  //   `${__dirname}/dev-data/data/my-tour.json`,
+  //   JSON.stringify(singleTour),
+  //   (err) => {
+  //     res.send(err);
+  //   }
+  // );
 });
 
 const port = 3000;
