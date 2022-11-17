@@ -9,6 +9,21 @@ const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
+/////////////////////////// Middleware //////////////////////////
+
+// middleware has 're1', 'res', and 'next' as an arguments, where 'next' is a function
+app.use((req, res, next) => {
+  console.log('Hello from the Middleware');
+  next(); // if we don't call next(), the next middleware will not be executed
+});
+
+// Let's manipulate the middleware
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  req.reuestedBy = 'Adnan Ali';
+  next();
+});
+
 /////////////////////////////// GET Method //////////////////////////////////
 
 // 'get' is a http method which specifies something to happen against a certain ULR
@@ -17,6 +32,8 @@ app.get('/api/v1/tours', (req, res) => {
   res.status(200).json({
     status: 'success',
     results: tours.length,
+    requestedAt: req.requestTime, // added this with middleware
+    requestedBy: req.reuestedBy, // added this with middleware
     data: {
       tours,
     },
@@ -47,7 +64,7 @@ app.post('/api/v1/tours', (req, res) => {
 
 app.get('/api/v1/tours/:tourId', (req, res) => {
   const id = req.params.tourId;
-  const singleTour = tours.find((tour) => tour.id === +id);
+  const singleTour = tours.find((tour) => tour.id === +id); // '+' converts 'id' to a 'number' from 'string'
   singleTour
     ? res.status(200).json({
         status: 'success',
@@ -75,18 +92,27 @@ app.get('/api/v1/tours/:tourId', (req, res) => {
 
 app.patch('/api/v1/tours/:id', (req, res) => {
   const id = req.params.id * 1;
-  const findTour = tours.find((tour) => tour.id === id);
 
-  // after finding specific tour, we updated the 'duration' property of the tour
-  const updateTour = Object.assign(findTour, (findTour.duration = req.body));
+  if (id < tours.length) {
+    const findTour = tours.find((tour) => tour.id === id);
 
-  //Added the updated tour to the list of all tours
-  const updatedAllTour = Object.assign(tours, (tours[id] = updateTour));
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour: updatedAllTour,
-    },
+    // after finding specific tour, we updated the 'duration' property of the tour
+    const updateTour = Object.assign(findTour, (findTour.duration = req.body));
+
+    //Added the updated tour to the list of all tours
+    const updatedAllTour = Object.assign(tours, (tours[id] = updateTour));
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tour: updatedAllTour,
+      },
+    });
+  }
+
+  res.status(404).json({
+    status: 'Invalid',
+    data: { message: 'Invalid Id' },
   });
 });
 
@@ -94,14 +120,21 @@ app.patch('/api/v1/tours/:id', (req, res) => {
 
 app.delete('/api/v1/tours/:id', (req, res) => {
   const id = req.params.id * 1;
-  const toursAfterDeletion = tours.filter((tour) => tour.id !== id);
-  console.log(toursAfterDeletion);
 
-  res.status(200).json({
-    status: 'success',
-    data: {
-      data: toursAfterDeletion,
-    },
+  if (id < tours.length) {
+    const toursAfterDeletion = tours.filter((tour) => tour.id !== id);
+
+    res.status(204).json({
+      status: 'success',
+      data: {
+        tours: toursAfterDeletion,
+      },
+    });
+  }
+
+  res.status(404).json({
+    status: 'Invalid',
+    tours: { message: 'Invalid Id' },
   });
 });
 
