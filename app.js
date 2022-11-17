@@ -267,13 +267,18 @@ const deleteUser = (req, res) => {
   }
 };
 
+// Let's create a mini router app
+// this is a kind of middleware, when request is made to this URL, 'tourRouter' then runs
+const tourRouter = express.Router();
+app.use('/api/v1/users', tourRouter);
+
 // here 'route' takes the URL where a request is to be sent, and 'get' responds to the request with responce
-app.route('/api/v1/users').get(getAllUsers).post(newAllUsers); // multiple requests at same URL
-app
-  .route('/api/v1/users/:id')
-  .get(getUser)
-  .patch(updateUser)
-  .delete(deleteUser); // with :id params
+
+// here '/' means the URL '/api/v1/users' and
+// '/:id' means '/api/v1/users/:id'
+
+tourRouter.route('/').get(getAllUsers).post(newAllUsers); // multiple requests at same URL
+tourRouter.route('/:id').get(getUser).patch(updateUser).delete(deleteUser); // with :id params
 
 const port = 3000;
 
